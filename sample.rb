@@ -331,5 +331,350 @@ will throw errors
 
 chapter 3 Organizing objects with classes
 
+yes ruby has classes
+
+when u define a method inline the class you dont need ticket.
+
+instance methods:
+
+so basically when you define a method inline a class, its
+available to all Ticket objects, but you can create
+instance methods for one particular ticket object
+heres an example:
+
+class Ticket
+  def event
+    "whatever"
+  end
+end
+
+t1 = Ticket.new
+t2 = Ticket.new
+
+def t1.whatever
+  puts "only t1"
+end
+
+if t1.respond_to?("whatever")
+  t1.whatever
+else
+  puts "doesnt respond"
+end
+
+if t2.respond_to?("whatever")
+  t1.whatever
+else
+  puts "doesnt respond"
+end
+
+overriding methods:
+
+class C
+  def m
+    puts "First definition of method m"
+  end
+  def m
+    puts "Second definition of method m"
+  end
+end
+
+c.new.m
+
+the printed result: Second definition of method m
+
+reopening classes:
+
+you can redefine classes again:
+
+class C
+  def x
+  end
+end
+
+class C
+  def y
+  end
+end
+
+you usually do this if you define it
+in multiple files
+
+if you use require then it will merge definitions
+
+Ruby is about objects, and objects are instances of classes
+
+instances variables and object state:
+
+he instance variable enables individual objects to remember state.
+Instance variables work much
+like other variables: you assign values to them, and you read
+ those values back; you can add them
+together, print them out, and so on. But instance variables have
+a few differences:
+Instance variable names always start with a single @ (at sign).
+This enables you to recognize an
+instance variable at a glance.
+
+Instance variables are only visible to the object to which they belong.
+(Being “visible to an
+object” has a technical definition having to do with the default object
+ self
+
+An instance variable initialized in one method inside a class can be used by any method defined
+within that class.
+
+class Person
+  def set_name(string)
+    puts "setting person's name..."
+    @name = string
+  end
+
+  def get_name
+    puts "returning the person's name"
+    @name
+  end
+end
+
+joe = Person.new
+joe.set_name("Joe")
+puts joe.get_name
+
+
+initializing an object with state
+
+class Ticket
+  def initialize(venue,date)
+    @venue = venue
+    @date = date
+  end
+  def venue
+    @venue
+  end
+
+  def date
+    @date
+  end
+end
+
+setter methods
+
+you can also have instance variables created and set later:
+
+class Ticket
+  def initialize(venue, date)
+    @venue = venue
+    @date = date
+  end
+  def set_price(amount)
+    @price = amount
+  end
+  def price
+    @price
+  end
+end
+
+The equal sign (=) in method names
+Ruby allows you to define methods that end with an equal sign (=). Let’s replace set_price with a
+method called price= (“price” plus an equal sign):
+
+def price=(amount)
+@price = amount
+end
+
+we can use syntactic sugar with this:
+ticket.price=(63.00)
+
+ticket.price = 63.00
+
+attributes and the attr_* method family
+
+this:
+
+class Ticket
+  def initialize(venue, date)
+    @venue = venue
+    @date = date
+  end
+  def price=(price)
+    @price = price
+  end
+  def venue
+    @venue
+  end
+  def date
+    @date
+  end
+  def price
+    @price
+  end
+end
+
+is the same as :
+
+class Ticket
+  attr_reader :venue, :date, :price
+  attr_writer :price
+  def initialize(venue, date)
+    @venue = venue
+    @date = date
+  end
+end
+The elements that start with colons (:venue, and so on) are symbols.
+ Symbols are a kind of naming or
+labeling facility. They’re a cousin of strings, although not quite
+the same thing
+
+
+In the realm of object attributes, combination reader/writer attributes like
+price are common. Ruby
+provides a single method, attr_accessor, for creating both a
+ reader and a writer method for an
+attribute. attr_accessor is the equivalent of attr_reader plus
+attr_writer.
+
+class Ticket
+  attr_reader :venue, :date
+  attr_accessor :price
+  # ... etc.
+end
+
+inheritance and the ruby class heiarchy:
+
+
+In this example, Magazine inherits from Publication. Note the syntax in Magazine’s class
+definition:
+
+class Publication
+  attr_accessor :publisher
+end
+
+class Magazine < Publication
+  attr_accessor :editor
+end
+
+
+We can continue the cascade downward:
+c
+lass Ezine < Magazine
+end
+
+
+ruby does not allow multiple inheritance
+
+Every class—Object, Person, Ticket—is an instance of a class called Class.
+As you’ve already
+seen, you can create a class object with the special class
+keyword formula
+
+my_class = Class.new
+
+Class.new corresponds precisely to other constructor calls
+like Object.new and Ticket.new.
+When you instantiate the class Class, you create a class.
+That class, in turn, can create instances of its
+own:
+
+instance_of_my_class = my_class.new
+
+If you want to create an anonymous class using Class.new, and you also
+ want to add instance
+methods at the time you create it, you can do so by appending a code
+ block after the call to new. A
+code block is a fragment of code that you supply as part of a method
+call, which can be executed from
+the method:
+
+c = Class.new do
+  def say_hello
+    puts "Hello!"
+  end
+end
+
+how class objects call methods:
+
+To understand where classes get their methods, think about where
+objects in general get their methods
+(minus modules, which we haven’t explored yet):
+From their class
+From the superclass and earlier ancestors of their class
+From their own store of singleton methods (the “talk” in def obj.talk)
+
+
+#creating anonymous class
+a2 = Class.new do
+  def bar
+    puts "a2 function"
+  end
+end
+
+a2.new.bar
+
+class vs methods
+#note f singleton method
+class Ticket
+  def foo
+    puts "Ticket"
+  end
+end
+
+a2 = Ticket.new
+
+def Ticket.foobar
+  puts "foobar"
+end
+
+a2.foobar #wont work since Ticket.foobar is a singleton method for the object
+          #Ticket
+
+#note this wont work either:
+
+class Ticket
+  def foo
+    puts "Ticket"
+  end
+end
+
+def Ticket.foobar
+  puts "foobar"
+end
+
+a2 = Ticket.new
+a2.foobar
+
+#this will work:
+class Ticket
+  def foo
+    puts "Ticket"
+  end
+end
+
+class Ticket
+  def foobar
+    puts "foobar"
+  end
+end
+
+a2 = Ticket.new
+a2.foobar
+
+we’ve defined a method that we can access through the class
+object Ticket but not through its instances
+
+Remember:
+Classes are objects.
+Instances of classes are objects, too.
+A class object (like Ticket) has its own methods, its own state, and its own identity. It doesn’t
+share these things with instances of itself. Sending a message to Ticket isn’t the same thing as
+sending a message to fg or cc or any other instance of Ticket
+
+
+(note THIS is not real code)
+Here are some examples of this notation and what they refer to:
+Ticket#price refers to the instance method price in the class Ticket.
+Ticket.most_expensive refers to the class method most_expensive in the class Ticket.
+Ticket::most_expensive also refers to the class method most_expensive in the class
+Ticket.
+
+
 
 =end

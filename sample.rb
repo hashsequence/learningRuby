@@ -688,7 +688,7 @@ VENUES = ["Convention Center", "Fairgrounds", "Town Hall"]
 
 yes you can modify constants, but will get a warning
 
-ch3 summary: 
+ch3 summary:
 
 
 How writing a class and then creating instances of that class allow you to share behaviors
